@@ -1,8 +1,13 @@
 import query from '~/apollo/queries/repository'
 import marked from 'marked'
+import md5 from 'md5'
+
+const safeId = value => {
+  return `a${md5(value)}`
+}
 
 const renderer = new marked.Renderer()
-renderer.heading = (text, level) => `<h${level} id="${text}">${text}</h${level}>`
+renderer.heading = (text, level) => `<h${level} id="${safeId(text)}">${text}</h${level}>`
 marked.setOptions({
   renderer,
   gfm: true,
@@ -40,7 +45,8 @@ export const actions = {
       .filter(_ => _.depth <= 4)
       .map(_ => ({
         level: _.depth,
-        text: _.text
+        text: _.text,
+        id: safeId(_.text)
       }))
     store.commit('UPDATE_HEADLINES', headlines)
   }

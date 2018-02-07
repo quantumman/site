@@ -1,20 +1,7 @@
 <template>
   <v-app>
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      fixed
-      clipped
-    >
-    </v-navigation-drawer>
-    <v-toolbar
-      app
-      fixed
-      clipped-left
-      flat
-    >
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-    </v-toolbar>
+    <snackbars group="info" />
+
     <v-content>
       <v-container fluid>
         <nuxt/>
@@ -24,7 +11,12 @@
 </template>
 
 <script>
+import Snackbars from '~/components/snackbars'
+
 export default {
+  components: {
+    Snackbars
+  },
   data: () => ({
     drawer: true
   })

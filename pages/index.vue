@@ -1,26 +1,55 @@
 <template>
-  <section>
-    <aside class="toc mb-2">
-      <ul class="toc-menu">
-        <template v-for="item in headlines">
-          <li :key="item.text" :class="level(item)">
-            <nuxt-link :to="`#${item.text}`">{{ item.text }}</nuxt-link>
-          </li>
+  <main>
+    <v-navigation-drawer
+      v-model="drawer"
+      fixed
+      app
+    >
+      <v-toolbar flat>
+        <v-list>
+          <v-list-tile>
+            <v-list-tile-title class="title">
+              目次
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-toolbar>
+
+      <v-divider />
+
+      <v-list dense class="pa-0">
+        <template v-for="(item, index) in headlines">
+          <v-divider v-if="item.level === 2" :key="`${item.id}-${index}`" />
+          <v-list-tile :key="index" :to="`#${item.id}`" nuxt>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                <div :class="level(item)">{{ item.text }}</div>
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </template>
-      </ul>
-    </aside>
-    <div class="text-xs-left markdown-body" v-html="curriculumVitae"></div>
-  </section>
+      </v-list>
+    </v-navigation-drawer>
+    <v-toolbar
+      app
+      fixed
+      flat
+    >
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+
+      <v-spacer />
+      <v-btn icon @click.stop="handleDownloadPdf">
+        <v-icon>file_download</v-icon>
+      </v-btn>
+    </v-toolbar>
+    <div class="text-xs-left markdown-body" v-html="curriculumVitae" ref="content"></div>
+  </main>
 </template>
 
 <script>
-import allRepos from '~/apollo/queries/allRepos'
-import repository from '~/apollo/queries/repository'
-import { retry } from 'async';
-
 export default {
   data: () => ({
-    allRepos: {}
+    drawer: true
   }),
   async fetch ({store, params}) {
     return await store.dispatch('repository/fetch')
@@ -31,6 +60,9 @@ export default {
     },
     headlines () {
       return this.$store.state.repository.headlines
+    },
+    generating () {
+      return this.$store.state.pdf.generating
     }
   },
   methods: {
@@ -43,13 +75,15 @@ export default {
         'level-5': item.level === 5,
         'level-6': item.level === 6,
       }
-    }
-  },
-  apollo: {
-    allRepos: {
-      prefetch: true,
-      query: allRepos,
-      update: ({ user }) => user.repositories.nodes
+    },
+    handleDownloadPdf () {
+      this.$notify({
+        group: 'info',
+        title: 'Important message',
+        text: 'Hello user! This is a notification!',
+        duration: 999999
+      });
+      //this.$store.dispatch('pdf/generate', { element: this.$refs.content, filename: '職務履歴書' })
     }
   }
 }
@@ -60,24 +94,15 @@ export default {
 </style>
 
 <style scoped lang='stylus'>
-.toc
-  border solid 1px #ddd
-  font-size 0.8em
-  padding 0.2em
-ul.toc-menu
-  list-style none
-li
-  &.level-1
-    font-size 1.2em
-  &.level-2
-    font-size 1.0em
-    margin-left 1em
-  &.level-3
-    font-size 0.9em
-    margin-left 2em
-  &.level-4
-    font-size 0.8em
-    margin-left 3em
-.toc-menu a
-  text-decoration-line none
+.level-1
+  font-size 1.2em
+.level-2
+  font-size 1.0em
+  margin-left 1em
+.level-3
+  font-size 0.9em
+  margin-left 2em
+.level-4
+  font-size 0.9em
+  margin-left 3em
 </style>
