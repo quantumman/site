@@ -1,0 +1,10 @@
+query {
+  user(login:"quantumman") {
+    repositories(first:10) {
+      nodes {
+        name
+        url
+      }
+    }
+  }
+}
