@@ -1,6 +1,18 @@
 <template>
   <v-app>
-    <snackbars group="info" />
+    <v-snackbar
+      :timeout="snackbar.timeout"
+      :top="snackbar.y === 'top'"
+      :bottom="snackbar.y === 'bottom'"
+      :right="snackbar.x === 'right'"
+      :left="snackbar.x === 'left'"
+      :multi-line="snackbar.mode === 'multi-line'"
+      :vertical="snackbar.mode === 'vertical'"
+      v-model="snackbarState"
+    >
+      {{ snackbar.text }}
+      <v-btn flat color="pink" @click.native="snackbarState = false">閉じる</v-btn>
+    </v-snackbar>
 
     <v-content>
       <v-container fluid>
@@ -11,15 +23,28 @@
 </template>
 
 <script>
-import Snackbars from '~/components/snackbars'
-
 export default {
-  components: {
-    Snackbars
-  },
   data: () => ({
     drawer: true
-  })
+  }),
+  computed: {
+    snackbar () {
+      return this.$store.state.snackbar
+    },
+
+    snackbarState: {
+      get () {
+        return this.$store.state.snackbar.show
+      },
+      set (value) {
+        if (value) {
+          this.$store.dispatch('snackbar/show', {})
+        } else {
+          this.$store.dispatch('snackbar/close')
+        }
+      }
+    }
+  }
 }
 </script>
 

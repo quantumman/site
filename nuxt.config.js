@@ -6,8 +6,7 @@ module.exports = {
   ],
 
   plugins: [
-    { src: '~/plugins/html2pdf', ssr: false },
-    { src: '~/plugins/vue-notification', ssr: false }
+    { src: '~/plugins/html2pdf', ssr: false }
   ],
 
   // Give apollo module options

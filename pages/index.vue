@@ -77,13 +77,23 @@ export default {
       }
     },
     handleDownloadPdf () {
-      this.$notify({
-        group: 'info',
-        title: 'Important message',
-        text: 'Hello user! This is a notification!',
-        duration: 999999
-      });
-      //this.$store.dispatch('pdf/generate', { element: this.$refs.content, filename: '職務履歴書' })
+      this.$store.dispatch('pdf/generate', { element: this.$refs.content, filename: '職務履歴書' })
+    }
+  },
+  watch: {
+    generating: {
+      handler (newValue, oldValue) {
+        if (oldValue === true && newValue === false) {
+          this.$store.dispatch('snackbar/show', {
+            text: 'ダウンロードしました'
+          })
+        }
+        if (oldValue === false && newValue === true) {
+          this.$store.dispatch('snackbar/show', {
+            text: 'ダウンロード準備中です'
+          })
+        }
+      }
     }
   }
 }
